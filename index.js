@@ -23,7 +23,7 @@ process.on("unhandledRejection", (err) => console.log("unhandledRejection:", err
 process.on("uncaughtException", (err) => console.log("uncaughtException:", err?.message || err));
 
 // ===================== CONFIG (USE ENV VARS) =====================
-const TELEGRAM_TOKEN = "8179985214:AAHqHa-rOyH__LgNHmp--mg9SgHlTTsbmYA";
+const TELEGRAM_TOKEN = "8179985214:AAGUCtLsLuMD90hKMNbWs6N70unEWbyAEbc";
 
 const PAYHERO_USERNAME = "UuT8gpaqwB5ttjYC4ivd";
 
