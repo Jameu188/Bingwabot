@@ -1,6 +1,6 @@
 // Telegram + PayHero STK Payment (Buttons Only: Category -> Package Button -> Proceed/Change Number)
 // Save as: index.js
-// npm i node-telegram-bot-api express
+// npm i node-telegram-bot-api express pdfkit
 //
 // UPDATED (as requested):
 // ✅ /start WILL NOT delete previous messages (no cleanup on /start)
@@ -43,6 +43,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const TelegramBot = require("node-telegram-bot-api");
+const PDFDocument = require("pdfkit");
 
 // ---- fetch polyfill ----
 let fetchFn = global.fetch;
@@ -527,6 +528,76 @@ function kenyaDateTime() {
   } catch (_) {
     return new Date().toLocaleString();
   }
+
+function buildTransactionStatement({ success, pkgLabel, price, when }) {
+  if (success) {
+    return (
+      `🧾 Transaction Statement\n\n` +
+      `Status: ✅ COMPLETED\n` +
+      `Package: ${pkgLabel}\n` +
+      `Amount: Ksh ${price}\n` +
+      `Date & Time: ${when}`
+    );
+  }
+  return (
+    `🧾 Transaction Statement\n\n` +
+    `Status: ❌ FAILED\n` +
+    `Package: ${pkgLabel || "N/A"}\n` +
+    `Amount: Ksh ${price || "N/A"}\n` +
+    `Date & Time: ${when}`
+  );
+}
+
+async function sendReceiptPdf(chatId, receipt) {
+  try {
+    const doc = new PDFDocument({ size: "A4", margin: 50 });
+    const chunks = [];
+    doc.on("data", (c) => chunks.push(c));
+    const done = new Promise((resolve) => doc.on("end", resolve));
+
+    // Header
+    doc.fontSize(18).text("Bingwa Mtaani Receipt", { align: "center" });
+    doc.moveDown(0.5);
+    doc.fontSize(10).text("This is an auto-generated receipt.", { align: "center" });
+    doc.moveDown(1);
+
+    // Body
+    doc.fontSize(12);
+    const rows = [
+      ["Status", receipt.status],
+      ["User", receipt.userName || String(receipt.chatId)],
+      ["ChatID", String(receipt.chatId)],
+      ["Package", receipt.pkgLabel || "N/A"],
+      ["Amount", `Ksh ${receipt.amount ?? "N/A"}`],
+      ["M-Pesa Ref", receipt.mpesaRef || "N/A"],
+      ["External Ref", receipt.externalRef || "N/A"],
+      ["Date & Time (Kenya)", receipt.when || "N/A"],
+    ];
+
+    rows.forEach(([k, v]) => {
+      doc.font("Helvetica-Bold").text(k + ":", { continued: true });
+      doc.font("Helvetica").text(" " + String(v));
+      doc.moveDown(0.2);
+    });
+
+    doc.moveDown(1);
+    doc.fontSize(10).fillColor("gray").text(`Support: ${HELP_PHONE}`);
+    doc.fillColor("black");
+
+    doc.end();
+    await done;
+
+    const pdfBuffer = Buffer.concat(chunks);
+    const filename = `receipt_${receipt.chatId}_${Date.now()}.pdf`;
+
+    // Send as document
+    const m = await bot.sendDocument(chatId, pdfBuffer, { caption: "📄 Receipt (PDF)" }, { filename, contentType: "application/pdf" });
+    trackBotMsg(chatId, m.message_id);
+  } catch (e) {
+    console.log("sendReceiptPdf error:", e?.message || e);
+  }
+}
+
 }
 
 function makeExternalRef(chatId, category, price) {
@@ -1277,17 +1348,23 @@ app.post("/payhero/callback", async (req, res) => {
 
     // ✅ Notify user (ONLY ONE MESSAGE on success)
     if (pending) {
-      await sendTracked(
-        chatId,
-        `✅ Payment Confirmed\nYour payment of *Ksh ${pending.price}* has been received and your request is being processed.\nYour package will be processed now.`,
-        { parse_mode: "Markdown", ...mainMenuKeyboard() }
-      );
+      const statement = buildTransactionStatement({ success: true, pkgLabel: pending.pkgLabel, price: pending.price, when });
+    await sendTracked(chatId, statement, { ...mainMenuKeyboard() });
+
+    // ✅ Auto-generated PDF receipt
+    await sendReceiptPdf(chatId, {
+      status: "COMPLETED",
+      userName: (pending && pending.buyerName) ? pending.buyerName : String(chatId),
+      chatId,
+      pkgLabel: pending?.pkgLabel,
+      amount: pending?.price,
+      mpesaRef: mpesaOut,
+      externalRef,
+      when,
+    });
     } else {
-      await sendTracked(
-        chatId,
-        `✅ Payment Confirmed\nYour payment has been received and your request is being processed.\nYour package will be processed now.`,
-        { ...mainMenuKeyboard() }
-      );
+      const statement = buildTransactionStatement({ success: true, pkgLabel: pending.pkgLabel, price: pending.price, when });
+    await sendTracked(chatId, statement, { ...mainMenuKeyboard() });
     }
 
     // ✅ Notify admin (kept exactly with External Ref + M-Pesa Ref + Time + ResultCode/Status)
@@ -1668,7 +1745,7 @@ return sendTracked(
     });
   }
 
-  if (text === "1️⃣ 20 free SMS (5 pts)" || text === "2️⃣ 250MB free (20 pts)") {
+  if (text === "1️⃣ 20 free SMS (5 pts)" || text === "2️⃣ 250MB free (19 pts)") {
     const item = redeemChoiceFromText(text);
     if (!item) return;
 
