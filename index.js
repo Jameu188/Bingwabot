@@ -16,6 +16,84 @@
 // - Admin MUST press /start on the bot at least once, otherwise Telegram blocks bot->admin messages.
 // - Put banner.jpg in same folder as index.js (or set BANNER_URL=https://...).
 
+const express = require("express");
+const app = express();
+
+// PayHero will POST JSON
+app.use(express.json({ limit: "2mb" }));
+
+// Render provides PORT
+const PORT = process.env.PORT || 3000;
+
+// Simple health check
+app.get("/", (req, res) => res.status(200).send("OK"));
+
+// PayHero callback endpoint
+app.post("/payhero/callback", async (req, res) => {
+  try {
+    const body = req.body || {};
+    console.log("PAYHERO CALLBACK:", JSON.stringify(body));
+
+    // ✅ Always reply fast to stop retries
+    res.status(200).json({ ok: true });
+
+    // ---- IMPORTANT ----
+    // PayHero field names may differ. Common patterns:
+    // body.status, body.payment_status, body.success, body.data.status, etc.
+    // Adjust these checks to match the real payload you see in logs.
+
+    const statusRaw =
+      body?.payment_status ||
+      body?.status ||
+      body?.data?.status ||
+      body?.data?.payment_status ||
+      "";
+
+    const status = String(statusRaw).toLowerCase();
+
+    const externalRef =
+      body?.external_reference ||
+      body?.data?.external_reference ||
+      body?.reference ||
+      body?.data?.reference ||
+      "";
+
+    // detect success
+    const isSuccess =
+      status.includes("success") ||
+      status.includes("paid") ||
+      status.includes("complete") ||
+      status === "1" ||
+      body?.success === true ||
+      body?.data?.success === true;
+
+    if (!externalRef) return;
+
+    // Your externalRef format: BINGWA-<timestamp>-<category>-<price>-<chatId>
+    const parts = String(externalRef).split("-");
+    const chatId = Number(parts[parts.length - 1]);
+
+    if (!Number.isFinite(chatId)) return;
+
+    if (isSuccess) {
+      // ✅ Notify user
+      await sendTracked(chatId, `✅ Payment received successfully!\nRef: ${externalRef}\n\nYour package will be processed now.`, {
+        ...mainMenuKeyboard(),
+      });
+
+      // ✅ Notify admin (optional)
+      await notifyAdmin(`✅ *Payment Confirmed*\nChatID: \`${chatId}\`\nRef: \`${externalRef}\`\nStatus: \`${statusRaw}\``);
+    } else {
+      // optional: notify failed/cancelled
+      // await sendTracked(chatId, `⚠️ Payment not completed.\nRef: ${externalRef}\nStatus: ${statusRaw}`, { ...mainMenuKeyboard() });
+    }
+  } catch (e) {
+    console.log("callback error:", e?.message || e);
+    // still return 200 if possible (already returned above in normal flow)
+  }
+});
+
+app.listen(PORT, () => console.log("🌐 Webhook server listening on", PORT));
 // ===================== REQUIREMENTS =====================
 const fs = require("fs");
 const path = require("path");
