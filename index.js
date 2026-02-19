@@ -984,42 +984,115 @@ app.post("/payhero/callback", async (req, res) => {
     if (pending) {
       // If Bingwa Deals, enforce once-per-day AFTER success
       if (pending.category === "Bingwa Deals" && pending.phone254) {
+app.post("/payhero/callback", async (req, res) => {
+  try {
+    const body = req.body || {};
+    console.log("PAYHERO CALLBACK RAW:", JSON.stringify(body));
+
+    // ✅ Reply fast to stop retries
+    res.status(200).json({ ok: true });
+
+    // PayHero sometimes sends the real payload inside `response` as a JSON string
+    let payload = body;
+
+    if (typeof body?.response === "string") {
+      try {
+        payload = JSON.parse(body.response);
+      } catch (e) {
+        // if it's not JSON, keep original
+        payload = body;
+      }
+    } else if (body?.response && typeof body.response === "object") {
+      payload = body.response;
+    }
+
+    console.log("PAYHERO CALLBACK PARSED:", JSON.stringify(payload));
+
+    // ✅ externalRef can come in many field names (PayHero: User_Reference)
+    const externalRef =
+      payload?.external_reference ||
+      payload?.External_Reference ||
+      payload?.reference ||
+      payload?.Reference ||
+      payload?.user_reference ||
+      payload?.User_Reference ||
+      body?.external_reference ||
+      body?.reference ||
+      body?.User_Reference ||
+      "";
+
+    // ✅ success can come as boolean or "complete" / "paid" etc
+    const statusRaw =
+      payload?.payment_status ||
+      payload?.status ||
+      payload?.woocommerce_payment_status ||
+      payload?.Payment_Status ||
+      body?.payment_status ||
+      body?.status ||
+      body?.woocommerce_payment_status ||
+      "";
+
+    const statusStr = String(statusRaw).toLowerCase();
+
+    const isSuccess =
+      body?.status === true ||
+      payload?.status === true ||
+      statusStr.includes("success") ||
+      statusStr.includes("paid") ||
+      statusStr.includes("complete") ||
+      statusStr === "1" ||
+      payload?.success === true ||
+      body?.success === true;
+
+    console.log("PAYHERO CALLBACK DECISION:", { externalRef, statusRaw, isSuccess });
+
+    if (!externalRef) return;
+
+    // Your externalRef format: BINGWA-<timestamp>-<category>-<price>-<chatId>
+    const parts = String(externalRef).split("-");
+    const chatId = Number(parts[parts.length - 1]);
+    if (!Number.isFinite(chatId)) return;
+
+    if (!isSuccess) {
+      // optional: notify user for failed
+      // await sendTracked(chatId, `⚠️ Payment not completed.\nRef: ${externalRef}\nStatus: ${statusRaw}`, { ...mainMenuKeyboard() });
+      return;
+    }
+
+    // ✅ SUCCESS: read pending payment (if you added pending store)
+    const pending = getPendingPayment ? getPendingPayment(externalRef) : null;
+
+    if (pending) {
+      // Bingwa lock AFTER SUCCESS only
+      if (pending.category === "Bingwa Deals" && pending.phone254) {
         markBingwaPurchasedToday(pending.phone254);
       }
 
-      // Stats + referral reward happen on SUCCESS payment
       if (pending.pkgLabel) incPurchaseStats(chatId, pending.pkgLabel);
       if (pending.category) maybeRewardInviterOnSuccessPurchase(chatId, pending.category);
 
-      deletePendingPayment(externalRef);
+      if (deletePendingPayment) deletePendingPayment(externalRef);
     }
 
-    // ✅ Notify user
     const details =
       pending && pending.pkgLabel
         ? `\nOffer: ${pending.pkgLabel}\nFrom: ${formatTo07(pending.phone254)}\nAmount: Ksh ${pending.price}`
         : "";
 
+    // ✅ Notify user (THIS is what you want)
     await sendTracked(
       chatId,
       `✅ Payment received successfully!\nRef: ${externalRef}${details}\n\nYour package will be processed now.`,
-      {
-        parse_mode: "Markdown",
-        ...mainMenuKeyboard(),
-      }
+      { ...mainMenuKeyboard() }
     );
 
     // ✅ Notify admin
     await notifyAdmin(
-      `✅ *Payment Confirmed*\nChatID: \`${chatId}\`\nRef: \`${externalRef}\`\nStatus: \`${statusRaw}\`${
-        pending?.pkgLabel ? `\nOffer: *${pending.pkgLabel}*` : ""
-      }${pending?.phone254 ? `\nPhone: *${formatTo07(pending.phone254)}*` : ""}${
-        pending?.price ? `\nAmount: *Ksh ${pending.price}*` : ""
-      }`
+      `✅ *Payment Confirmed*\nChatID: \`${chatId}\`\nRef: \`${externalRef}\`\nStatus: \`${statusRaw}\``
     );
   } catch (e) {
     console.log("callback error:", e?.message || e);
-    // return 200 already sent above in normal flow
+    // NOTE: response already sent above
   }
 });
 
