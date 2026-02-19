@@ -1,0 +1,114 @@
+{
+  "balances": {},
+  "usedReceipts": {},
+  "deposits": [],
+  "lastRefByChat": {},
+  "bonusClaimed": {},
+  "withdraws": [],
+  "investments": [],
+  "users": {
+    "991624101": {
+      "phone": "254707071631",
+      "limits": {
+        "2026-02-18": {
+          "Bingwa Deals": 1
+        }
+      },
+      "antiSpam": {
+        "lastAt": 1771484457343,
+        "lastSig": "SMS Offers||Ksh 5 • 20 SMS 24HRS||254707071631"
+      },
+      "lastSeen": 1771484457176,
+      "purchasesByDay": {
+        "2026-02-18": 1,
+        "2026-02-19": 3
+      },
+      "weeklyPurchases": {
+        "2026-08": {
+          "Ksh 20 • 250MB 24HRS": 2,
+          "Ksh 22 • 60 Bonga Points": 1,
+          "Ksh 5 • 20 SMS 24HRS": 1
+        }
+      },
+      "inviterId": "7859465542",
+      "lastReferralRewardDay": "2026-02-19",
+      "points": 0,
+      "pendingAction": null
+    },
+    "7859465542": {
+      "phone": "254707071631",
+      "limits": {
+        "2026-02-18": {
+          "Bundles": 2,
+          "Bingwa Deals": 1
+        }
+      },
+      "antiSpam": {
+        "lastAt": 1771456495037,
+        "lastSig": "Unlimited Deals||Ksh 110 • 2GB 24HRS||254707071631"
+      },
+      "lastSeen": 1771476762075,
+      "purchasesByDay": {
+        "2026-02-18": 6
+      },
+      "weeklyPurchases": {
+        "2026-08": {
+          "Ksh 250 • 200 MIN 7 DAYS": 1,
+          "Ksh 1000 • Flex 9000 (30 DAYS)": 1,
+          "Ksh 22 • 60 Bonga Points": 2,
+          "Ksh 100 • Flex 1000 (MIDNIGHT)": 1,
+          "Ksh 110 • 2GB 24HRS": 1
+        }
+      },
+      "refBy": "",
+      "points": 0.6000000000000001,
+      "refRewardedDay": {},
+      "inviterId": "",
+      "lastReferralRewardDay": "",
+      "pendingAction": null
+    },
+    "8549022927": {
+      "phone": "254707071631",
+      "limits": {
+        "2026-02-18": {
+          "Bingwa Deals": 1
+        },
+        "2026-02-19": {
+          "Bingwa Deals": 1
+        }
+      },
+      "antiSpam": {
+        "lastAt": 1771476413348,
+        "lastSig": "Unlimited Deals||Ksh 110 • 2GB 24HRS||254707071631"
+      },
+      "lastSeen": 1771476810611,
+      "purchasesByDay": {
+        "2026-02-18": 2,
+        "2026-02-19": 5
+      },
+      "weeklyPurchases": {
+        "2026-08": {
+          "Ksh 22 • 60 Bonga Points": 3,
+          "Ksh 5 • 20 SMS 24HRS": 1,
+          "Ksh 20 • 250MB 24HRS": 1,
+          "Ksh 110 • 2GB 24HRS": 2
+        }
+      },
+      "refBy": "",
+      "points": 0,
+      "refRewardedDay": {},
+      "inviterId": "7859465542",
+      "lastReferralRewardDay": "2026-02-19",
+      "pendingAction": null
+    }
+  },
+  "stats": {
+    "totalPurchases": 18,
+    "totalBroadcasts": 4
+  },
+  "bingwaByPhone": {
+    "2026-02-19": {
+      "254707071631": 1
+    }
+  }
+}
