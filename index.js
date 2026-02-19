@@ -133,7 +133,7 @@ const PAYHERO_CHANNEL_ID_SMS = 5577;
 const PAYHERO_CHANNEL_ID_MINUTES = 5577;
 
 // Optional callback url (leave blank if you don't have https)
-const PAYHERO_CALLBACK_URL = "";
+const PAYHERO_CALLBACK_URL = "https://bingwabot-4.onrender.com/payhero/callback";
 
 // Banner image:
 const BANNER_URL = ""; // e.g. "https://yourdomain.com/banner.jpg"
