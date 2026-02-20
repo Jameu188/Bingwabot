@@ -488,7 +488,7 @@ async function cleanupBeforeReply(chatId, userMsgId) {
   const obj = cleanup.get(String(chatId));
   if (!obj || !obj.botMsgIds.length) return;
 
-  const ids = obj.botMsgIds.slice().reverse();
+  const ids = obj.botMsgIds.slice().reverse().slice(0, 25);
   for (const mid of ids) {
     // eslint-disable-next-line no-await-in-loop
     await safeDelete(chatId, mid);
@@ -1057,12 +1057,11 @@ async function sendToUserFromAdmin(targetChatId, adminMsg) {
 
 // ===================== REDEEM FLOW =====================
 function redeemChoiceFromText(text) {
-  const t = String(text || "").toLowerCase();
-  if (t.includes("20 free sms")) return REDEEM_ITEMS[0];
-  if (t.includes("250mb")) return REDEEM_ITEMS[1];
+  const t = String(text || "").trim();
+  if (t.startsWith("1")) return REDEEM_ITEMS[0];
+  if (t.startsWith("2")) return REDEEM_ITEMS[1];
   return null;
 }
-
 
 // ===================== COMMAND PARSER =====================
 function parseStartPayload(text) {
@@ -1336,7 +1335,12 @@ bot.on("message", async (msg) => {
 
   // cleanup user message + previous bot messages (users only), except /start
   if (!isStartCmd && msg.message_id) {
-    await cleanupBeforeReply(chatId, msg.message_id);
+    // During redeem flow, don't wipe previous bot messages (keeps the confirm prompt visible)
+    if (actPre && actPre.kind === "redeem") {
+      await safeDelete(chatId, msg.message_id);
+    } else {
+      await cleanupBeforeReply(chatId, msg.message_id);
+    }
   }
 
   // ===================== ADMIN: BROADCAST MODE =====================
@@ -1606,7 +1610,7 @@ bot.on("message", async (msg) => {
       }
 
       if (act.step === "confirm") {
-        if (text.includes("Confirm")) {
+        if (/confirm/i.test(text)) {
           act.step = "number";
           setPendingAction(chatId, act);
           return sendTracked(chatId, "📱 Enter the phone number to load (07/01/254...).", { ...mainMenuKeyboard() });
@@ -1684,7 +1688,7 @@ return sendTracked(
     });
   }
 
-  if (text === "1️⃣ 20 free SMS (5 pts)" || text === "2️⃣ 250MB free (19 pts)") {
+  if (/^1/.test(text) || /^2/.test(text) || text.includes("20 free SMS") || text.toLowerCase().includes("250")) {
     const item = redeemChoiceFromText(text);
     if (!item) return;
 
