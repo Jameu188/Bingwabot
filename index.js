@@ -2500,3 +2500,15 @@ console.log("✅ Bingwa Mtaani PayHero STK bot running");
 
 // ✅ Withdrawal system removed as requested.
 }
+const http = require("http");
+
+const PORT = process.env.PORT || 10000;
+
+http
+  .createServer((req, res) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Bot is running ✅");
+  })
+  .listen(PORT, () => {
+    console.log("Listening on port", PORT);
+  });
