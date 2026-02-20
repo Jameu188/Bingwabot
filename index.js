@@ -62,7 +62,7 @@ process.on("uncaughtException", (err) => console.log("uncaughtException:", err?.
 
 // ===================== CONFIG =====================
 // ⚠️ IMPORTANT: Move secrets to Render Environment Variables (recommended)
-const TELEGRAM_TOKEN = "8179985214:AAHnEgYbgq33KJrOpGv5RTZcuyhFaCKJdyc";
+const TELEGRAM_TOKEN = "7363172097:AAEtqjxWt-5ActwoZsFSQ0EyEDAP6tSOsgA";
 const PAYHERO_USERNAME = "UuT8gpaqwB5ttjYC4ivd";
 const PAYHERO_PASSWORD = "FIfH59osWhh2cwwrsWfxtnx8K7SPjhitehpPgAmZ";
 // ✅ ADMIN
