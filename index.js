@@ -2499,7 +2499,7 @@ Short by: ${need} pts`, {
 console.log("✅ Bingwa Mtaani PayHero STK bot running");
 
 // ✅ Withdrawal system removed as requested.
-}
+
 const http = require("http");
 
 const PORT = process.env.PORT || 10000;
