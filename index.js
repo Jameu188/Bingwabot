@@ -60,15 +60,10 @@ const fetch = (...args) => fetchFn(...args);
 process.on("unhandledRejection", (err) => console.log("unhandledRejection:", err?.message || err));
 process.on("uncaughtException", (err) => console.log("uncaughtException:", err?.message || err));
 
+const TELEGRAM_TOKEN = "8179985214:AAHnf2wGQ4aXqqZUX02u_0rLYGronNhwP8Y";
+const PAYHERO_USERNAME = "UuT8gpaqwB5ttjYC4ivd";
+const PAYHERO_PASSWORD = "FIfH59osWhh2cwwrsWfxtnx8K7SPjhitehpPgAmZ";
 // ===================== CONFIG =====================
-// ⚠️ IMPORTANT: Move secrets to Render Environment Variables (recommended)
-const TELEGRAM_TOKEN = "YOUR_TOKEN";
-// ORIGINAL TOKEN REMOVED FOR SECURITY
-// const TELEGRAM_TOKEN = "Hnf2wGQ4aXqqZUX02u_0rLYGronNhwP8Y";
-const PAYHERO_USERNAME = "YOUR_USERNAME";
-// const PAYHERO_USERNAME = "UuT8gpaqwB5ttjYC4ivd";
-const PAYHERO_PASSWORD = "YOUR_PASSWORD";
-// const PAYHERO_PASSWORD = "FIfH59osWhh2cwwrsWfxtnx8K7SPjhitehpPgAmZ";
 // ✅ ADMIN
 const ADMIN_ID = 7859465542;
 // const ADMIN_ID = 7859465542;
