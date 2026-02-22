@@ -1199,8 +1199,55 @@ function welcomeText(name) {
     `• 📞 Minutes\n` +
     `• ⭐ Bonga Points\n` +
     `• 🌀 Flex Deals\n\n` +
+
+    `📦 *Packages Overview*\n\n` +
+
+    `📦 *Bingwa Deals*\n` +
+    `• Ksh 20 • 250MB 24HRS\n` +
+    `• Ksh 21 • 1GB 1HR\n` +
+    `• Ksh 47 • 350MB 7 DAYS\n` +
+    `• Ksh 49 • 1.5GB 3HRS\n` +
+    `• Ksh 55 • 1.25GB MIDNIGHT\n` +
+    `• Ksh 99 • 1GB 24HRS\n` +
+    `• Ksh 299 • 2.5GB 7 DAYS\n` +
+    `• Ksh 700 • 6GB 7 DAYS\n\n` +
+
+    `∞ *Unlimited Deals*\n` +
+    `• Ksh 23 • 1GB 1HR\n` +
+    `• Ksh 52 • 1.5GB 3HRS\n` +
+    `• Ksh 110 • 2GB 24HRS\n` +
+    `• Ksh 251 • 5GB 3 DAYS\n\n` +
+
+    `✉️ *SMS Offers*\n` +
+    `• Ksh 5 • 20 SMS 24HRS\n` +
+    `• Ksh 10 • 200 SMS 24HRS\n` +
+    `• Ksh 30 • 1000 SMS 7 DAYS\n` +
+    `• Ksh 26 • Unlimited SMS DAILY\n` +
+    `• Ksh 49 • Unlimited Weekly SMS\n` +
+    `• Ksh 101 • 1500 SMS MONTHLY\n` +
+    `• Ksh 201 • 3500 SMS MONTHLY\n\n` +
+
+    `📞 *Minutes*\n` +
+    `• Ksh 25 • 20 MIN MIDNIGHT\n` +
+    `• Ksh 21 • 43 MIN 3HRS\n` +
+    `• Ksh 51 • 50 MIN MIDNIGHT\n` +
+    `• Ksh 250 • 200 MIN 7 DAYS\n` +
+    `• Ksh 510 • 500 MIN 7 DAYS\n\n` +
+
+    `⭐ *Bonga Points*\n` +
+    `• Ksh 22 • 60 Bonga Points\n\n` +
+
+    `🌀 *Flex Deals*\n` +
+    `• Ksh 20 • Flex 350 (2HRS)\n` +
+    `• Ksh 35 • Flex 500 (3HRS)\n` +
+    `• Ksh 100 • Flex 1000 (MIDNIGHT)\n` +
+    `• Ksh 255 • Flex 1500 (7 DAYS)\n` +
+    `• Ksh 1000 • Flex 9000 (30 DAYS)\n\n` +
+
     `🎁 Earn points via referrals and redeem.\n\n` +
     `⚠️ *Bingwa Deals rule:* *Once per day per phone number* (ONLY after success).\n\n` +
+    `✅ Tap 🛒 *Buy Offers* to purchase.\n\n` +
+
     `☎️ Help / delays: *${HELP_PHONE}*\n`
   );
 }
