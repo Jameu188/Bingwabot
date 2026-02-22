@@ -2842,69 +2842,86 @@ if (s.step === "package") {
         setUserPhone(chatId, phoneMaybe);
 
         // ✅ Bingwa once per day per phone (hard block ONLY when entering phone)
-        if (!isAdmin(chatId) && s.category === "Bingwa Deals" && bingwaAlreadyPurchasedToday(phoneMaybe)) {
-          sessions.delete(chatId);
-          return sendTracked(
-            chatId,
-            `🚫 *Bingwa Deals limit reached*\nNumber: *${formatTo07(phoneMaybe)}*\nThis number already bought Bingwa today.\n\nUse a different number or try again tomorrow.`,
-            { parse_mode: "Markdown", ...mainMenuKeyboard(chatId) }
-          );
-        }
+if (!isAdmin(chatId) && s.category === "Bingwa Deals" && bingwaAlreadyPurchasedToday(phoneMaybe)) {
+  sessions.delete(chatId);
+  return sendTracked(
+    chatId,
+    `🚫 *Bingwa Deals limit reached*\nNumber: *${maskPhone(phoneMaybe)}*\nThis number already bought Bingwa today.\n\nUse a different number or try again tomorrow.`,
+    { parse_mode: "Markdown", ...mainMenuKeyboard(chatId) }
+  );
+}
 
-        await sendTracked(chatId, `✅ Saved number: ${formatTo07(phoneMaybe)}\nNow tap ✅ Proceed.`, {
-          ...confirmKeyboard(true),
-        });
-        return;
-      }
-
-      return sendTracked(chatId, "Choose ✅ Proceed or 📞 Change Number.", confirmKeyboard(!!getUserPhone(chatId)));
-    }
-
-    // STEP 4: PHONE INPUT
-    if (s.step === "phone") {
-      const phone = normalizePhone(text);
-      if (!phone) {
-        return sendTracked(
-          chatId,
-          "❌ Invalid phone.\nUse: 07XXXXXXXX / 01XXXXXXXX / 2547XXXXXXXX / 2541XXXXXXXX",
-          confirmKeyboard(false)
-        );
-      }
-
-      setUserPhone(chatId, phone);
-
-      // ✅ Bingwa once per day per phone (hard block ONLY here)
-      if (!isAdmin(chatId) && s.category === "Bingwa Deals" && bingwaAlreadyPurchasedToday(phone)) {
-        sessions.delete(chatId);
-        return sendTracked(
-          chatId,
-          `🚫 *Bingwa Deals limit reached*\nNumber: *${maskPhone(phone)}*\nThis number already bought Bingwa today.\n\nUse a different number or try again tomorrow.`,
-          { parse_mode: "Markdown", ...mainMenuKeyboard(chatId) }
-        );
-      }
-
-      s.step = "confirm";
-      sessions.set(chatId, s);
-
-      const pkg = findPackageByLabel(s.category, s.pkgKey);
-      if (!pkg) {
-        sessions.delete(chatId);
-        return sendTracked(chatId, "❌ Package missing. Tap 🛒 Buy Offers again.", { ...mainMenuKeyboard(chatId) });
-      }
-
-      return sendTracked(
-        chatId,
-        `✅ Number saved: *${formatTo07(phone)}*\n\nSelected: *${pkg.label}*\n\nTap ✅ Proceed to send STK.`,
-        {
-          parse_mode: "Markdown",
-          ...confirmKeyboard(true),
-        }
-      );
-    }
-  } catch (err) {
-    sessions.delete(chatId);
-    return sendTracked(chatId, `⚠️ Error: ${err.message}\n\nHelp: ${HELP_PHONE}`, { ...mainMenuKeyboard(chatId) });
+await sendTracked(
+  chatId,
+  `✅ Saved number: ${maskPhone(phoneMaybe)}\nNow tap ✅ Proceed.`,
+  {
+    ...confirmKeyboard(true),
   }
+);
+return;
+}
+
+return sendTracked(
+  chatId,
+  "Choose ✅ Proceed or 📞 Change Number.",
+  confirmKeyboard(!!getUserPhone(chatId))
+);
+}
+
+// STEP 4: PHONE INPUT
+if (s.step === "phone") {
+  const phone = normalizePhone(text);
+  if (!phone) {
+    return sendTracked(
+      chatId,
+      "❌ Invalid phone.\nUse: 07XXXXXXXX / 01XXXXXXXX / 2547XXXXXXXX / 2541XXXXXXXX",
+      confirmKeyboard(false)
+    );
+  }
+
+  setUserPhone(chatId, phone);
+
+  // ✅ Bingwa once per day per phone (hard block ONLY here)
+  if (!isAdmin(chatId) && s.category === "Bingwa Deals" && bingwaAlreadyPurchasedToday(phone)) {
+    sessions.delete(chatId);
+    return sendTracked(
+      chatId,
+      `🚫 *Bingwa Deals limit reached*\nNumber: *${maskPhone(phone)}*\nThis number already bought Bingwa today.\n\nUse a different number or try again tomorrow.`,
+      { parse_mode: "Markdown", ...mainMenuKeyboard(chatId) }
+    );
+  }
+
+  s.step = "confirm";
+  sessions.set(chatId, s);
+
+  const pkg = findPackageByLabel(s.category, s.pkgKey);
+  if (!pkg) {
+    sessions.delete(chatId);
+    return sendTracked(
+      chatId,
+      "❌ Package missing. Tap 🛒 Buy Offers again.",
+      { ...mainMenuKeyboard(chatId) }
+    );
+  }
+
+  return sendTracked(
+    chatId,
+    `✅ Number saved: *${maskPhone(phone)}*\n\nSelected: *${pkg.label}*\n\nTap ✅ Proceed to send STK.`,
+    {
+      parse_mode: "Markdown",
+      ...confirmKeyboard(true),
+    }
+  );
+}
+
+} catch (err) {
+  sessions.delete(chatId);
+  return sendTracked(
+    chatId,
+    `⚠️ Error: ${err.message}\n\nHelp: ${HELP_PHONE}`,
+    { ...mainMenuKeyboard(chatId) }
+  );
+}
 });
 
 // ===================== STARTUP LOG =====================
