@@ -2716,7 +2716,7 @@ Waiting for admin approval.`,
     }
 
 
-    // STEP 2: PACKAGE BUTTON
+// STEP 2: PACKAGE BUTTON
 if (s.step === "package") {
   const pkg = findPackageByLabel(s.category, text);
   if (!pkg) return sendTracked(chatId, "Tap a package button from the list:", packagesKeyboard(s.category));
@@ -2739,7 +2739,7 @@ if (s.step === "package") {
     parse_mode: "Markdown", 
     ...confirmKeyboard(hasSaved) 
   });
-
+}  // ✅ THIS WAS MISSING
     // STEP 3: CONFIRM
     if (s.step === "confirm") {
       const pkg = findPackageByLabel(s.category, s.pkgKey);
