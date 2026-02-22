@@ -2715,31 +2715,30 @@ Waiting for admin approval.`,
       return sendTracked(chatId, `👇 ${category} packages:`, packagesKeyboard(category));
     }
 
+
     // STEP 2: PACKAGE BUTTON
-    if (s.step === "package") {
-      const pkg = findPackageByLabel(s.category, text);
-      if (!pkg) return sendTracked(chatId, "Tap a package button from the list:", packagesKeyboard(s.category));
+if (s.step === "package") {
+  const pkg = findPackageByLabel(s.category, text);
+  if (!pkg) return sendTracked(chatId, "Tap a package button from the list:", packagesKeyboard(s.category));
 
-      s.pkgKey = pkg.label;
-      s.step = "confirm";
-      sessions.set(chatId, s);
+  s.pkgKey = pkg.label;
+  s.step = "confirm";
+  sessions.set(chatId, s);
 
-      const savedPhone = getUserPhone(chatId);
-      const hasSaved = !!savedPhone;
+  const savedPhone = getUserPhone(chatId);
+  const hasSaved = !!savedPhone;
 
-// ✅ IMPORTANT: NO early Bingwa block here (block only on ✅ Proceed or entering phone)
+  const msgText =
+    `✅ Selected:\n*${pkg.label}*\n\n` +
+    (hasSaved 
+      ? `📱 Saved number: *${maskPhone(savedPhone)}*\n\n` 
+      : `📱 No saved phone yet.\n\n`) +
+    `Choose:\n• ✅ Proceed (use saved number)\n• 📞 Change Number`;
 
-const msgText =
-  `✅ Selected:\n*${pkg.label}*\n\n` +
-  (hasSaved 
-    ? `📱 Saved number: *${maskPhone(savedPhone)}*\n\n` 
-    : `📱 No saved phone yet.\n\n`) +
-  `Choose:\n• ✅ Proceed (use saved number)\n• 📞 Change Number`;
-
-return sendTracked(chatId, msgText, { 
-  parse_mode: "Markdown", 
-  ...confirmKeyboard(hasSaved) 
-});
+  return sendTracked(chatId, msgText, { 
+    parse_mode: "Markdown", 
+    ...confirmKeyboard(hasSaved) 
+  });
 
     // STEP 3: CONFIRM
     if (s.step === "confirm") {
