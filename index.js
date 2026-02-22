@@ -1339,24 +1339,24 @@ function maybeRewardInviterOnSuccessPurchase(buyerChatId, amountKsh, when) {
   if (!Number.isFinite(bonus) || bonus <= 0) return;
 
   addPoints(inviterId, bonus);
-
-  // ✅ Count unique successful referrals for redeem eligibility (only first success per referred user)
-  if (!buyer.referralCounted) {
-    const inv = getUser(inviterId);
-    inv.referralSuccessCount = Number(inv.referralSuccessCount || 0) + 1;
-    buyer.referralCounted = true;
-    saveDB();
-  }
-
-  notifyAdmin(
-    `🎯 *Referral Reward*\n` +
-      `Inviter: \`${mdEscape(inviterId)}\`\n` +
-      `Buyer: \`${mdEscape(buyerChatId)}\`\n` +
-      `Purchase: *Ksh ${mdEscape(amt)}*\n` +
-      `Bonus (2%): *${mdEscape(bonus.toFixed(2))} pts*\n` +
-      `Time: \`${mdEscape(String(when || kenyaDateTime()))}\``
-  );
+// ✅ Count unique successful referrals for redeem eligibility (only first success per referred user)
+if (!buyer.referralCounted) {
+  const inv = getUser(inviterId);
+  inv.referralSuccessCount = Number(inv.referralSuccessCount || 0) + 1;
+  buyer.referralCounted = true;
+  saveDB();
 }
+
+const cleanBonus = parseFloat(bonus.toFixed(2));
+
+notifyAdmin(
+  `🎯 *Referral Reward*\n` +
+  `Inviter: \`${mdEscape(inviterId)}\`\n` +
+  `Buyer: \`${mdEscape(buyerChatId)}\`\n` +
+  `Purchase: *Ksh ${mdEscape(amt)}*\n` +
+  `Bonus: *${mdEscape(cleanBonus)}pts*\n` +
+  `Time: \`${mdEscape(String(when || kenyaDateTime()))}\``
+);
 
 // ===================== SUPPORT (2-WAY) =====================
 async function forwardToAdminWithUserTag(userMsg) {
@@ -1588,27 +1588,27 @@ app.post("/payhero/callback", async (req, res) => {
     const mpesaOut = mpesaReceiptStr || "N/A";
 
     // If failed/cancelled/blank -> SEND FAILURE MESSAGE ONCE
-    if (!isSuccess) {
-      const failKey = `FAIL-${externalRef}`;
-      if (alreadyProcessed(failKey)) return;
-      markProcessed(failKey);
+if (!isSuccess) {
+  const failKey = `FAIL-${externalRef}`;
+  if (alreadyProcessed(failKey)) return;
+  markProcessed(failKey);
 
-      const pending = getPendingPayment(externalRef);
-      const details =
-        pending && pending.pkgLabel
-          ? `Offer: ${pending.pkgLabel}\nFrom: ${formatTo07(pending.phone254)}\nAmount: Ksh ${pending.price}`
-          : "";
+  const pending = getPendingPayment(externalRef);
+  const details =
+    pending && pending.pkgLabel
+      ? `Offer: ${pending.pkgLabel}\nFrom: ${maskPhone(pending.phone254)}\nAmount: Ksh ${pending.price}`
+      : "";
 
-      if (pending) deletePendingPayment(externalRef);
+  if (pending) deletePendingPayment(externalRef);
 
-      const out =
-        `❌ Payment failed at ${when}.\n` +
-        (details ? `${details}\n` : "") +
-        `Your package could not be processed. Please try again or contact customer support.\n\nHelp: ${HELP_PHONE}`;
+  const out =
+    `❌ Payment failed at ${when}.\n` +
+    (details ? `${details}\n` : "") +
+    `Your package could not be processed. Please try again or contact customer support.\n\nHelp: ${HELP_PHONE}`;
 
-      await sendTracked(chatId, out, { ...mainMenuKeyboard(chatId) });
-      return;
-    }
+  await sendTracked(chatId, out, { ...mainMenuKeyboard(chatId) });
+  return;
+}
 
     // Prevent double-processing if PayHero retries (SUCCESS)
     if (alreadyProcessed(externalRef)) return;
@@ -1656,13 +1656,13 @@ app.post("/payhero/callback", async (req, res) => {
     if (pending) {
       await sendTracked(
         chatId,
-        `✅ Payment Confirmed\nYour payment of *Ksh ${pending.price}* has been received and your request is being processed.\nYour package will be processed now.`,
+        `✅ Payment Confirmed\n\nYour payment of *Ksh ${pending.price}* has been received and your request is being processed.`,
         { parse_mode: "Markdown", ...mainMenuKeyboard(chatId) }
       );
     } else {
       await sendTracked(
         chatId,
-        `✅ Payment Confirmed\nYour payment has been received and your request is being processed.\nYour package will be processed now.`,
+        `✅ Payment Confirmed\n\nYour payment has been received and your request is being processed.`,
         { ...mainMenuKeyboard(chatId) }
       );
     }
@@ -1957,14 +1957,20 @@ if (acMatch) {
   setRedeemCooldown(targetId, 5 * 60 * 1000);
 
   
-  // Delete previous bot message
-  await deleteIfExists(chatId, prev);
+// Delete previous bot message
+await deleteIfExists(chatId, prev);
 
-  const sent = await bot.sendMessage(
-    Number(targetId),
-    `✅ Withdrawal Approved\n\nAmount: ${Number(req.amount || 0)} pts\nKES Sent: ${pointsToKes(req.amount)}\nMPESA: ${req.phone}\n\nYour withdrawal is being processed.`,
-    { ...mainMenuKeyboard(chatId) }
-  ).catch(() => {});
+const sent = await bot.sendMessage(
+  Number(targetId),
+  `✅ Withdrawal Approved
+
+Amount: ${Number(req.amount || 0)} pts
+KES Sent: ${pointsToKes(req.amount)}
+MPESA: ${mask07(req.phone)}
+
+Your withdrawal is being processed.`,
+  { ...mainMenuKeyboard(chatId) }
+).catch(() => {});
 
   return sendTracked(chatId, `✅ Withdraw approved for ${targetId}`);
 }
@@ -2542,7 +2548,7 @@ Choose amount to withdraw:`,
 // ===================== WITHDRAW RATE =====================
 // 100 pts = 70 KES  →  1 pt = 0.7 KES
 // ✅ Withdraw unlock rule: user must spend at least 250 KSH before making a withdrawal request (admin bypass)
-const MIN_WITHDRAW_SPEND = 250;
+const MIN_WITHDRAW_SPEND = 300;
 function pointsToKes(pts) {
   return Number(pts || 0) * 0.7;
 }
@@ -2627,26 +2633,17 @@ Remaining: Ksh ${remaining}`, { ...mainMenuKeyboard(chatId) });
   setPendingRedeem(chatId, req);
 
   
-  // Delete previous bot message
-  await deleteIfExists(chatId, prev);
+// Delete previous bot message
+await deleteIfExists(chatId, prev);
 
-  const sent = await bot.sendMessage(
-    ADMIN_ID,
-    `💸 Withdraw Request
+const sent = await bot.sendMessage(
+  ADMIN_ID,
+  `💸 Withdraw Request
 User: ${chatId}
 Amount: ${amount} pts
 KES to Send: ${pointsToKes(amount)}
-MPESA: ${phone07}`,
-    {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: "✅ Approve", callback_data: `withdraw_accept:${reqId}` }],
-          [{ text: "❌ Decline", callback_data: `withdraw_decline:${reqId}` }],
-        ],
-      },
-    }
-  );
-
+MPESA: ${phone07}`
+);
   return sendTracked(
     chatId,
     `⏳ Withdrawal request submitted.
