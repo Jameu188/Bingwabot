@@ -813,7 +813,7 @@ const sent = await bot.sendMessage(
 
 return;
 
-} catch (_) {
+catch (_) {
   try {
     await bot.sendMessage(
       q.message?.chat?.id,
