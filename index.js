@@ -3418,21 +3418,17 @@ setInterval(async () => {
 }, 60 * 60 * 1000); // hourly
 
 console.log("✅ Bingwa Mtaani PayHero STK bot running");
-
-
-
 // ===============================================================
-// 🔥 ENHANCED LEDGER + NET REVENUE ANALYTICS EXTENSION
-// (Non-breaking patch – safely extends existing logic)
+// 🔥 ENHANCED LEDGER + NET REVENUE ANALYTICS EXTENSION (FIXED)
 // ===============================================================
 
-// --- Ensure analytics.withdrawalsByDay exists ---
+// Ensure withdrawals analytics bucket exists
 if (!db.analytics.withdrawalsByDay || typeof db.analytics.withdrawalsByDay !== "object") {
   db.analytics.withdrawalsByDay = {};
   saveDB();
 }
 
-// --- Simple Ledger (append-only, pruned automatically) ---
+// Simple ledger (safe append-only)
 if (!Array.isArray(db.ledger)) {
   db.ledger = [];
   saveDB();
@@ -3440,6 +3436,7 @@ if (!Array.isArray(db.ledger)) {
 
 function addLedgerEvent(evt) {
   db = repairDB(db);
+
   db.ledger.push({
     ts: Date.now(),
     ...evt
@@ -3453,7 +3450,6 @@ function addLedgerEvent(evt) {
   saveDB();
 }
 
-// --- Track withdrawals by day ---
 function bumpWithdrawalsByDay(dayKey, kshAmount) {
   db.analytics.withdrawalsByDay[dayKey] =
     db.analytics.withdrawalsByDay[dayKey] || { count: 0, ksh: 0 };
@@ -3464,21 +3460,24 @@ function bumpWithdrawalsByDay(dayKey, kshAmount) {
   saveDB();
 }
 
-// --- Wrap existing revenue success tracking ---
+// Wrap revenue tracking safely
 const __originalRecordSuccessfulRevenue = recordSuccessfulRevenue;
 recordSuccessfulRevenue = function (pending) {
   if (pending) {
     addLedgerEvent({
       type: "ORDER_SUCCESS",
       chatId: String(pending.chatId || ""),
-      ref: String(pending.pkgLabel || ""),
       amountKsh: Number(pending.price || 0),
       category: pending.category,
       pkg: pending.pkgLabel
     });
   }
+
   __originalRecordSuccessfulRevenue(pending);
 };
+
+console.log("🔥 Enhanced withdrawal & revenue tracking loaded");
+
 
 // --- Wrap addPoints & deductPoints for ledger logging ---
 const __originalAddPoints = addPoints;
