@@ -912,8 +912,16 @@ bot.on("callback_query", async (q) => {
     await bot.answerCallbackQuery(q.id).catch(() => {});
   } catch (_) {
     try {
-      await bot.sendMessage(q.message?.chat?.id, "❌ Error processing request. Please try again.").catch(() => {});
-      console.error("Callback error:", _);
+      await bot.sendMessage(q.message?.chat?.id, `✅ Withdrawal Approved!
+
+Your withdrawal request has been successfully approved.
+
+💰 Amount: ${POINTS} pts  
+💵 You will receive: KES ${KES}  
+📱 M-PESA: ${PHONE}
+
+The payment will be processed shortly.  
+Thank you for using Bingwa Mtaani 💙`);
       await bot.answerCallbackQuery(q.id).catch(() => {});
     } catch (_) {}
   }
