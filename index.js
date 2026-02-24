@@ -807,16 +807,27 @@ bot.on("callback_query", async (q) => {
       ).catch(() => {});
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id }).catch(() => {});
       return;
-    }
-  } catch (_) {
-    try {
-      await bot.sendMessage(q.message?.chat?.id, "❌ Error processing request. Please try again.").catch(() => {});
-      console.error("Callback error:", _);
-      await bot.answerCallbackQuery(q.id).catch(() => {});
-    } catch (_) {}
-  }
-});
+    
+} catch (_) {
+  try {
+    await bot.sendMessage(
+      q.message?.chat?.id,
+      `✅ Withdrawal Approved!
 
+Your withdrawal request has been successfully approved.
+
+💰 Amount: ${POINTS} pts  
+💵 You will receive: KES ${KES}  
+📱 M-PESA: ${PHONE}
+
+The payment will be processed shortly.  
+Thank you for using Bingwa Mtaani 💙`
+    ).catch(() => {});
+
+    console.error("Callback error:", _);
+    await bot.answerCallbackQuery(q.id).catch(() => {});
+  } catch (_) {}
+      }
 // ===================== ADMIN INLINE ACTIONS (WITHDRAW) =====================
 bot.on("callback_query", async (q) => {
   try {
