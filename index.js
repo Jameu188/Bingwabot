@@ -827,7 +827,7 @@ Thank you for using Bingwa Mtaani 💙`
     console.error("Callback error:", _);
     await bot.answerCallbackQuery(q.id).catch(() => {});
   } catch (_) {}
-  }
+}
       
 // ===================== ADMIN INLINE ACTIONS (WITHDRAW) =====================
 bot.on("callback_query", async (q) => {
