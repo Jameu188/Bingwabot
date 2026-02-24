@@ -800,7 +800,7 @@ bot.on("callback_query", async (q) => {
       await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id }).catch(() => {});
       await bot.deleteMessage(q.message.chat.id, q.message.message_id).catch(() => {});
 
-  const sent = await bot.sendMessage(
+const sent = await bot.sendMessage(
         targetChatId,
         `❌ Redeem request cancelled.\n\nReserved points refunded: ${cost} pts\nCurrent balance: ${getPoints(targetChatId).toFixed(2)} pts`,
         { ...mainMenuKeyboard(chatId) }
@@ -816,9 +816,9 @@ bot.on("callback_query", async (q) => {
 
 Your withdrawal request has been successfully approved.
 
-💰 Amount: ${POINTS} pts  
-💵 You will receive: KES ${KES}  
-📱 M-PESA: ${PHONE}
+💰 Amount: ${amountPts} pts  
+💵 You will receive: KES ${pointsToKes(amountPts)}  
+📱 M-PESA: ${mask07(req.phone)}
 
 The payment will be processed shortly.  
 Thank you for using Bingwa Mtaani 💙`
@@ -827,7 +827,8 @@ Thank you for using Bingwa Mtaani 💙`
     console.error("Callback error:", _);
     await bot.answerCallbackQuery(q.id).catch(() => {});
   } catch (_) {}
-      }
+  }
+      
 // ===================== ADMIN INLINE ACTIONS (WITHDRAW) =====================
 bot.on("callback_query", async (q) => {
   try {
