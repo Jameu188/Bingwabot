@@ -2790,7 +2790,7 @@ Choose amount to withdraw:`,
   if (text === "🔗 My Referral") {
     const BOT_USERNAME = "bingwa1_bot";
     const referralCommand = `/start ref_${chatId}`;
-    const referralLink = `https://t.me/${BOT_USERNAME}?start=ref_${chatId}-telegram`;
+    const referralLink = `https://t.me/${BOT_USERNAME}?start=ref_${chatId}`;
 
     const u = getUser(chatId);
     const totalReferrals = Number(u.referralSuccessCount || 0);
