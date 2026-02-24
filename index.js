@@ -795,19 +795,24 @@ bot.on("callback_query", async (q) => {
 
       await bot.sendMessage(chatId, "❌ Redeem declined / cancelled.").catch(() => {});
       await bot.answerCallbackQuery(q.id).catch(() => {});
-
-      // remove buttons + delete admin request message
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id }).catch(() => {});
-      await bot.deleteMessage(q.message.chat.id, q.message.message_id).catch(() => {});
+// remove buttons + delete admin request message
+await bot.editMessageReplyMarkup(
+  { inline_keyboard: [] },
+  { chat_id: q.message.chat.id, message_id: q.message.message_id }
+).catch(() => {});
+await bot.deleteMessage(q.message.chat.id, q.message.message_id).catch(() => {});
 
 const sent = await bot.sendMessage(
-        targetChatId,
-        `❌ Redeem request cancelled.\n\nReserved points refunded: ${cost} pts\nCurrent balance: ${getPoints(targetChatId).toFixed(2)} pts`,
-        { ...mainMenuKeyboard(chatId) }
-      ).catch(() => {});
-      await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id }).catch(() => {});
-      return;
-    
+  targetChatId,
+  `❌ Redeem request cancelled.\n\nReserved points refunded: ${cost} pts\nCurrent balance: ${getPoints(targetChatId).toFixed(2)} pts`,
+  { ...mainMenuKeyboard(chatId) }
+).catch(() => {});
+
+// ✅ FIX: this line was causing the error because the message was already deleted above
+// await bot.editMessageReplyMarkup({ inline_keyboard: [] }, { chat_id: q.message.chat.id, message_id: q.message.message_id }).catch(() => {});
+
+return;
+
 } catch (_) {
   try {
     await bot.sendMessage(
@@ -827,7 +832,7 @@ Thank you for using Bingwa Mtaani 💙`
     console.error("Callback error:", _);
     await bot.answerCallbackQuery(q.id).catch(() => {});
   } catch (_) {}
-}
+        }
       
 // ===================== ADMIN INLINE ACTIONS (WITHDRAW) =====================
 bot.on("callback_query", async (q) => {
