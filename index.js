@@ -912,7 +912,7 @@ bot.on("callback_query", async (q) => {
     await bot.answerCallbackQuery(q.id).catch(() => {});
   } catch (_) {
     try {
-      await bot.sendMessage(q.message?.chat?.id, "✅ Withdrawal approved.").catch(() => {});
+      await bot.sendMessage(q.message?.chat?.id, " ").catch(() => {});
       console.error("Callback error:", _);
       await bot.answerCallbackQuery(q.id).catch(() => {});
     } catch (_) {}
