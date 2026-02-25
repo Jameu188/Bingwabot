@@ -1820,7 +1820,7 @@ function withdrawKeyboard() {
 function yesNoKeyboard() {
   return {
     reply_markup: {
-      keyboard: [["✅ Confirm", "❌ Cancel"], [PREV_BTN]],
+      keyboard: [["✅ Confirm", PREV_BTN],
       resize_keyboard: true,
       one_time_keyboard: false,
     },
