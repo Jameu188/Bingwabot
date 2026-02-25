@@ -1729,7 +1729,6 @@ function queueBroadcastAlbum(adminChatId, msg) {
 // ===================== KEYBOARDS =====================
 function mainMenuKeyboard(chatId = null) {
   const keyboard = [
-    [PREV_BTN],
     ["🛒 Buy Offers"],
     ["💸 Withdraw Points"],
     ["🔗 My Referral", "ℹ️ Help"]
@@ -1757,11 +1756,10 @@ function categoriesKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        [PREV_BTN],
         ["📦 Bingwa Deals", "∞ Unlimited Deals"],
         ["✉️ SMS Offers", "📞 Minutes"],
         ["⭐ Bonga Points", "🌀 Flex Deals"],
-        ["⬅ Back", "❌ Cancel"],
+        ["⬅ Back", PREV_BTN],
       ],
       resize_keyboard: true,
       one_time_keyboard: false,
@@ -1782,7 +1780,7 @@ function confirmKeyboard(hasSavedPhone) {
   const rows = [];
   rows.push([PREV_BTN]);
   if (hasSavedPhone) rows.push(["✅ Proceed", "📞 Change Number"]);
-  rows.push(["⬅ Back", "❌ Cancel"]);
+  rows.push(["⬅ Back", PREV_BTN"]);
   return { reply_markup: { keyboard: rows, resize_keyboard: true, one_time_keyboard: false } };
 }
 
@@ -1790,11 +1788,10 @@ function redeemKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        [PREV_BTN],
         ["1️⃣ 20 free SMS (5 pts)"],
         ["2️⃣ 250MB free (20 pts)"],
         ["3️⃣ 20mins midnight free (25 pts)"],
-        ["⬅ Back", "❌ Cancel"],
+        ["⬅ Back", PREV_BTN],
       ],
       resize_keyboard: true,
       one_time_keyboard: false,
@@ -1808,13 +1805,12 @@ function withdrawKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        [PREV_BTN],
         ["25 pts", "50 pts"],
         ["100 pts", "250 pts"],
         ["500 pts", "1000 pts"],
         ["2000 pts"],
         ["⬅ Withdraw Menu"],
-        ["⬅ Back", "❌ Cancel"],
+        ["⬅ Back", PREV_BTN],
       ],
       resize_keyboard: true,
       one_time_keyboard: false,
@@ -1825,7 +1821,7 @@ function withdrawKeyboard() {
 function yesNoKeyboard() {
   return {
     reply_markup: {
-      keyboard: [[PREV_BTN], ["✅ Confirm", "❌ Cancel"], ["⬅ Back"]],
+      keyboard: [["✅ Confirm", "❌ Cancel"], [PREV_BTN]],
       resize_keyboard: true,
       one_time_keyboard: false,
     },
