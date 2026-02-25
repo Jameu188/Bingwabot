@@ -1777,7 +1777,6 @@ function packagesKeyboard(category) {
 
 function confirmKeyboard(hasSavedPhone) {
   const rows = [];
-  rows.push([PREV_BTN]);
   if (hasSavedPhone) rows.push(["✅ Proceed", "📞 Change Number"]);
   rows.push(["⬅ Back", PREV_BTN]);
   return { reply_markup: { keyboard: rows, resize_keyboard: true, one_time_keyboard: false } };
@@ -1808,7 +1807,6 @@ function withdrawKeyboard() {
         ["100 pts", "250 pts"],
         ["500 pts", "1000 pts"],
         ["2000 pts"],
-        ["⬅ Withdraw Menu"],
         ["⬅ Back", PREV_BTN],
       ],
       resize_keyboard: true,
