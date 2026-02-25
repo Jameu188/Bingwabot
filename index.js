@@ -1294,7 +1294,7 @@ async function renderSessionSnapshot(chatId, snap) {
     const hasSaved = !!savedPhone;
     const msgText =
       `✅ Selected:\n*${pkg.label}*\n\n` +
-      (hasSaved ? `📱 Saved number: *${maskPhone(savedPhone)}*\n\n` : `📱 No saved phone yet.\n\n`) +
+      (hasSaved ? `📱 Saved number: *${maskPhone(savedPhone)}*\n\n` : `📱 Paste number.\n\n`) +
       `Choose:\n• ✅ Proceed (use saved number)\n• 📞 Change Number`;
 
     return sendTracked(chatId, msgText, { parse_mode: "Markdown", ...confirmKeyboard(hasSaved) });
@@ -1820,7 +1820,7 @@ function withdrawKeyboard() {
 function yesNoKeyboard() {
   return {
     reply_markup: {
-      keyboard: [["✅ Confirm", PREV_BTN]],
+      keyboard: [["✅ Confirm", "❌ Cancel"]],
       resize_keyboard: true,
       one_time_keyboard: false,
     },
