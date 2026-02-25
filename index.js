@@ -738,19 +738,31 @@ async function __withdrawApprove(targetId, adminChatId, adminMsgId) {
     const phone = String(req.phone || "");
 
     // Notify user (FULL message)
-    await bot.sendMessage(
-      Number(uid),
-      `✅ Withdrawal Approved!
+    function maskPhoneNumber(phone) {
+  if (!phone) return "N/A";
+
+  const str = phone.toString();
+
+  if (str.length < 7) return str; // prevent slice errors
+
+  return str.slice(0, 4) + 'xxx' + str.slice(-3);
+}
+
+const maskedPhone = maskPhoneNumber(phone);
+
+await bot.sendMessage(
+  Number(uid),
+  `✅ Withdrawal Approved!
 
 Your withdrawal request has been successfully approved.
 
 💰 Amount: ${pts} pts
 💵 You will receive: KES ${kes}
-📱 M-PESA: ${phone}
+📱 M-PESA: ${maskedPhone}
 
 The payment will be processed shortly.
 Thank you for using Bingwa Mtaani 💙`
-    ).catch(() => {});
+).catch(() => {});
 
     // Notify admin
     if (adminChatId) {
