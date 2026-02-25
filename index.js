@@ -1772,7 +1772,7 @@ function packagesKeyboard(category) {
   const rows = [];
   rows.push([PREV_BTN]);
   for (let i = 0; i < list.length; i += 2) rows.push(list.slice(i, i + 2).map((x) => x.label));
-  rows.push(["⬅ Back", "❌ Cancel"]);
+  rows.push(["⬅ Back", PREV_BTN]);
   return { reply_markup: { keyboard: rows, resize_keyboard: true, one_time_keyboard: false } };
 }
 
