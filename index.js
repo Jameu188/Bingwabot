@@ -1965,7 +1965,7 @@ function categoriesKeyboard() {
         ["📦 Bingwa Deals", "∞ Unlimited Deals"],
         ["✉️ SMS Offers", "📞 Minutes"],
         ["⭐ Bonga Points", "🌀 Flex Deals"],
-        ["⬅ Back", PREV_BTN],
+        [PREV_BTN],
       ],
       resize_keyboard: true,
       one_time_keyboard: false,
