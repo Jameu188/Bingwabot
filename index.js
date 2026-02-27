@@ -5060,7 +5060,7 @@ if (s.step === "package") {
     `✅ Selected:\n*${pkg.label}*\n\n` +
     (hasSaved 
       ? `📱 Saved number: *${maskPhone(savedPhone)}*\n\n` 
-      : `📱 No saved phone yet.\n\n`) +
+      : `📱 Paste new number.\n\n`) +
     `Choose:\n• ✅ Proceed (use saved number)\n• 📞 Change Number`;
 
   return sendTracked(chatId, msgText, { 
